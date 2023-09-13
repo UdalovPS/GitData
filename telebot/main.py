@@ -46,6 +46,8 @@ async def add_note(message: types.Message):
         response = requests.post(url=url, data=data)
         text = response.json()['text']
         await message.answer(text)
+    else:
+        await message.answer('Не опознанная команда')
 
 
 if __name__ == '__main__':
