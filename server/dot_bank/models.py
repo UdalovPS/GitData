@@ -29,7 +29,7 @@ class NoteModel(models.Model):
     note_type = models.IntegerField(choices=NOTE_TYPE, default=0, verbose_name='Тип записи')
     note_date = models.DateField(auto_now=True, verbose_name='Дата записи')
     note_time = models.TimeField(auto_now=True, verbose_name='Время записи')
-    text = models.CharField(max_length=200, verbose_name='Текст записи')
+    text = models.TextField(verbose_name='Текст записи')
 
     def __str__(self):
         return self.text
