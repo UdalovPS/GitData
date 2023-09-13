@@ -27,7 +27,7 @@ async def contact(message):
             'name': message.from_user.username,
             'phone': message.contact.phone_number
         }
-        url = 'http://localhost:8000/person/'
+        url = 'http://localhost:14141/person/'
         response = requests.post(url=url, data=data)
         text = response.json()['text']
         await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
@@ -37,7 +37,7 @@ async def contact(message):
 async def add_note(message: types.Message):
     text = message.text[:2]
     if text.lower() == '/w':
-        url = 'http://localhost:8000/note/'
+        url = 'http://localhost:14141/note/'
         data = {
             'user_id': message.from_user.id,
             'note_type': 0,
