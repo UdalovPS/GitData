@@ -23,6 +23,7 @@ async def add_note(message: types.Message):
             'note_type': 0,
             'text': message.text[2:]
         }
+        print(data)
         response = requests.post(url=url, data=data)
         text = response.json()['text']
 
