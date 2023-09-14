@@ -7,6 +7,7 @@ data_person = {
 }
 data_note = {
     'user_id': 12345,
+    'username': 'udalov',
     'note_type': 0,
     'text': 'afsdfjhdjaksd'
 }
