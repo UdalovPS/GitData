@@ -19,6 +19,7 @@ async def add_note(message: types.Message):
         url = 'http://localhost:14141/note/'
         data = {
             'user_id': message.from_user.id,
+            'username': message.from_user.username,
             'note_type': 0,
             'text': message.text[2:]
         }
