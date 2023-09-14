@@ -14,8 +14,8 @@ class PersonModelAdmin(admin.ModelAdmin):
 @admin.register(NoteModel)
 class NoteModelAdmin(admin.ModelAdmin):
     list_display = [
-        'id', 'user_id', 'text', 'note_type', 'note_date', 'note_time'
+        'id', 'user_id', 'username', 'text', 'note_type', 'note_date', 'note_time'
     ]
-    list_filter = ['user_id', 'note_type']
-    search_fields = ['user_id', 'text']
+    list_filter = ['username', 'note_type']
+    search_fields = ['username', 'text']
 

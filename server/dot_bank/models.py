@@ -25,7 +25,8 @@ class NoteModel(models.Model):
         (0, "/w"),
     ]
     id = models.IntegerField(primary_key=True)
-    user_id = models.ForeignKey("PersonModel", on_delete=models.CASCADE, verbose_name='Сотрудник')
+    user_id = models.BigIntegerField()
+    username = models.CharField(max_length=50, verbose_name="Имя внесшего запись", default="")
     note_type = models.IntegerField(choices=NOTE_TYPE, default=0, verbose_name='Тип записи')
     note_date = models.DateField(auto_now=True, verbose_name='Дата записи')
     note_time = models.TimeField(auto_now=True, verbose_name='Время записи')

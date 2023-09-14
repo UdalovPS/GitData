@@ -29,19 +29,12 @@ class PersonApiView(APIView):
 
 class NoteApiView(APIView):
     def post(self, request: Request) -> Response:
-        try:
-            person = PersonModel.objects.get(user_id=request.POST['user_id'])
-            if person.role == 1 and person.authentication == True:
-                cursor = NoteModel(
-                    user_id=person,
-                    note_type=request.POST['note_type'],
-                    text=request.POST['text']
-                )
-                cursor.save()
-                return Response({'text': 'Запись внесена'})
-            else:
-                return Response({'text': 'Отказано в доступе'})
-        except Exception as _ex:
-            print(_ex)
-            return Response({'text': 'Отказано в доступе'})
+            cursor = NoteModel(
+                user_id=request.POST['user_id'],
+                username=request.POST['username'],
+                note_type=request.POST['note_type'],
+                text=request.POST['text']
+            )
+            cursor.save()
+            return Response({'text': 'Запись внесена'})
 
