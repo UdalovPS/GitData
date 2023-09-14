@@ -42,6 +42,7 @@ TEG_DICT = {
 
 @dp.message_handler(content_types=['text'])
 async def add_note(message: types.Message):
+    print("I see message")
     teg = message.text[:2]
     if teg.lower() in TEG_DICT:
         url = 'http://localhost:14141/note/'
