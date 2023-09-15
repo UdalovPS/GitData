@@ -44,7 +44,7 @@ TEG_DICT = {
 async def add_note(message: types.Message):
     print("I see message")
     teg = message.text[:2]
-    if teg.lower() in TEG_DICT:
+    if teg.lower() in TEG_DICT and message.text[2] == " ":
         url = 'http://localhost:14141/note/'
         data = {
             'user_id': message.from_user.id,
