@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
+import requests
 
 from .models import PersonModel, NoteModel
 
@@ -37,4 +38,21 @@ class NoteApiView(APIView):
             )
             cursor.save()
             return Response({'text': 'Запись внесена'})
+
+
+class FileView(APIView):
+    def get(self, request: Request) -> Response:
+        file_url = request.GET.get('url')       #URL for download file
+        file_name = request.GET.get('file_name')
+        file_res = requests.get(url=file_url)
+
+        TOKEN = "1955432392:AAFIKGS33j1DsT-zsWIAc_fs6ckOX4yjLQY"
+        method = 'sendDocument'
+        chat_id = 1953960185
+        response = requests.post(
+            url=f'https://api.telegram.org/bot{TOKEN}/{method}',
+            data={'chat_id': chat_id},
+            files={'document': (file_name, file_res.content)}
+        ).json()        #get file ID
+        return Response({'file_id': response['result']['document']['file_id']})
 
