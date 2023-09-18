@@ -38,7 +38,18 @@ import requests
 #
 # print(response)
 
-url = "http://localhost:8000/file/"
-data = {'url': 'urll'}
-responce = requests.get(url=url, params=data)
-print(responce.json())
+# url = "http://localhost:8000/file/"
+# data = {'url': 'urll'}
+# responce = requests.get(url=url, params=data)
+# print(responce.json())
+
+TOKEN = "1955432392:AAFIKGS33j1DsT-zsWIAc_fs6ckOX4yjLQY"
+method = 'sendDocument'
+chat_id = 1953960185
+with open('dataset_1.zip', 'rb') as file:
+    response = requests.post(
+        url=f'https://api.telegram.org/bot{TOKEN}/{method}',
+        data={'chat_id': chat_id, "text": 'text'},
+        files={'document': ('dataset_1.zip', file)}
+    ).json()
+print(response)

@@ -1,3 +1,5 @@
+import os
+
 from django.views import View
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -49,10 +51,13 @@ class FileView(APIView):
         TOKEN = "1955432392:AAFIKGS33j1DsT-zsWIAc_fs6ckOX4yjLQY"
         method = 'sendDocument'
         chat_id = 1953960185
-        response = requests.post(
-            url=f'https://api.telegram.org/bot{TOKEN}/{method}',
-            data={'chat_id': chat_id},
-            files={'document': (file_name, file_res.content)}
-        ).json()        #get file ID
+        file_name = 'dataset_1.zip'
+        with open("dataset_1.zip", 'rb') as file:
+
+            response = requests.post(
+                url=f'https://api.telegram.org/bot{TOKEN}/{method}',
+                data={'chat_id': chat_id, "text": 'text'},
+                files={'document': (file_name, file)}
+            ).json()        #get file ID
         return Response({'file_id': response['result']['document']['file_id']})
 
