@@ -28,6 +28,12 @@ class UrlCreator(StatesGroup):
 main_url = "http://212.220.202.105:8080/RINEX/RINEX/2023/"
 
 
+
+@dp.message_handler(commands=['cal'])
+async def get_calendar(message: types.Message):
+    await message.answer("Show cakendar")
+
+
 @dp.message_handler(commands=['date'])
 async def choice_date(message: types.Message):
     """This method choice station in list in one day"""
