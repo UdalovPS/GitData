@@ -3,17 +3,20 @@ import os
 import requests
 import json
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from config import TOKEN
 from parser import Parser
 
+load_dotenv()
+
+
 """Aiogram objects"""
-bot = Bot(token=TOKEN, parse_mode=types.ParseMode.HTML)
+bot = Bot(token=os.getenv('TEST_TOKEN'), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot, storage=MemoryStorage())
 logging.basicConfig(level=logging.INFO)
 

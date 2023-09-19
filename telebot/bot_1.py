@@ -1,12 +1,14 @@
 import logging
+import os
+
 from aiogram import Bot, Dispatcher, executor, types
 import requests
-import json
+from dotenv import load_dotenv
 
-from config import TOKEN
+load_dotenv()
 
 
-bot = Bot(token=TOKEN, parse_mode=types.ParseMode.HTML)
+bot = Bot(token=os.getenv('TOKEN'), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 logging.basicConfig(level=logging.INFO)
 
