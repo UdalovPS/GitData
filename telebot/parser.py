@@ -46,7 +46,7 @@ class Parser:
         src = self.get_data().text
         soup = self.create_bs4_obj(src)
         item_ts = soup.find_all("span", class_="item-ts")
-        dates_and_times = [datetime.strptime(item.text.split()[1], "%H:%M").time() for item in item_ts]
+        dates_and_times = [datetime.strptime(item.text, " %d.%m.%Y %H:%M") for item in item_ts]
         return dates_and_times
 
     def get_date_href_dict(self) -> dict:
@@ -57,10 +57,12 @@ class Parser:
 
 
 if __name__ == '__main__':
-    url = "http://212.220.202.105:8080/RINEX/RINEX/2023/"
-    url_2 = "http://212.220.202.105:8080/RINEX/RINEX/2023/001(0101)/"
-    p = Parser()
-    p.url = url
-    # print(p.get_datetime(soup))
+    url = "http://212.220.202.105:8080/RINEX/RINEX/2020/"
+    url_2 = "http://212.220.202.105:8080/RINEX/RINEX/2023/002(0102)/SISTt/"
+    p = Parser(url)
+    # print(len(p.get_datetime()))
     print(p.get_date_href_dict())
+    # print(p.get_href_list())
+    if p.get_date_href_dict() == {}:
+        print(None)
 
