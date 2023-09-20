@@ -36,7 +36,16 @@ MAIN_URL = "http://212.220.202.105:8080/RINEX/RINEX/"
 @dp.message_handler(commands=['get'])
 async def get_calendar(message: types.Message):
     """START calendar method"""
-    await message.answer("Выберите дату:", reply_markup=await SimpleCalendar().start_calendar())
+    url = 'http://localhost:14141/person/'
+    data = {'user_id': message.from_user.id}
+    response = requests.get(url=url, data=data)
+    text = response.json()['text']
+    if text == 3:
+        await message.answer("Вы не зарегистрированы. Напишите команду <b>/reg</b> для регистрации")
+    if text == False:
+        await message.answer("Администрация не одобрила вам заявку. Обратитесь к администрации")
+    if text == True:
+        await message.answer("Выберите дату:", reply_markup=await SimpleCalendar().start_calendar())
 
 
 @dp.callback_query_handler(simple_cal_callback.filter())
@@ -125,7 +134,7 @@ async def choice_station(message: types.Message, state: FSMContext):
     if today_files_url_list != []:
         time_obj_list = p.get_datetime()                #get times url, append in list
         time_url_tuple = tuple(zip(time_obj_list, today_files_url_list))  #create tuple index 0 -> time: index 1 -> file_name
-        today_choice_files = [value[1] for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
+        today_choice_files = [(value[1], value[0]) for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
     else:
         today_choice_files = ()
 
@@ -138,7 +147,7 @@ async def choice_station(message: types.Message, state: FSMContext):
         if yesterday_files_url_list != []:
             time_obj_list = p.get_datetime()                    #get times url, append in list
             time_url_tuple = tuple(zip(time_obj_list, yesterday_files_url_list))  #create tuple index 0 -> time: index 1 -> file_name
-            yesterday_choice_files = [value[1] for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
+            yesterday_choice_files = [(value[1], value[0]) for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
         else:
             yesterday_choice_files = ()
 
@@ -150,16 +159,27 @@ async def choice_station(message: types.Message, state: FSMContext):
 
         if today_choice_files != ():
             for file_url in today_choice_files:
-                full_url = f"{data['today_url']}{data['station']}{file_url}"
+                full_url = f"{data['today_url']}{data['station']}{file_url[0]}"
                 responce = requests.get(url=full_url)
-                await bot.send_document(message.chat.id, document=(file_url[:-1], responce.content))
+                post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
+                await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
 
         if yesterday_choice_files != ():
             for file_url in yesterday_choice_files:
-                full_url = f"{data['yesterday_url']}{data['station']}{file_url}"
+                full_url = f"{data['yesterday_url']}{data['station']}{file_url[0]}"
                 responce = requests.get(url=full_url)
-                await bot.send_document(message.chat.id, document=(file_url[:-1], responce.content))
+                post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
+                await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
         await state.finish()
+
+def post_download_statistic(user_id: int, file_name: str, date: datetime):
+    url = 'http://localhost:14141/file/'
+    data = {
+        "user_id": user_id,
+        "file_name": file_name,
+        "datetime": date,
+    }
+    requests.post(url=url, data=data)
 
 
 @dp.message_handler(commands=['check'])
@@ -169,12 +189,28 @@ async def check_working(message: types.Message):
 
 
 @dp.message_handler(commands=['reg'])
-async def registration(message: types.Message):
-    """This method registration user in server database"""
-    file_url = "http://212.220.202.105:8080/RINEX/RINEX/2023/001(0101)/TOUR/TOUR00100_R_20230010000_01H_MN.rnx"
-    file_name = 'file.rnx'
-    responce = requests.get(url=file_url)
-    await bot.send_document(message.chat.id, document=(file_name, responce.content))
+async def registraion_user(message: types.Message):
+    if message.from_user.username != None:
+        keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+        button_phone = types.KeyboardButton(text="Подать заявку", request_contact=True)
+        keyboard.add(button_phone)
+        await message.answer("Хотите зарегистрироваться?", reply_markup=keyboard)
+    else:
+        await message.answer("У вашего профиля отсутствует <b>Имя пользователя</b>. Зайдите в настройки телеграмма и добавьте его.")
+
+
+@dp.message_handler(content_types=['contact'])
+async def contact(message):
+    if message.contact is not None:
+        data = {
+            'user_id': message.contact.user_id,
+            'name': message.from_user.username,
+            'phone': message.contact.phone_number
+        }
+        url = 'http://localhost:14141/person/'
+        response = requests.post(url=url, data=data)
+        text = response.json()['text']
+        await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
 
 
 if __name__ == '__main__':

@@ -1,20 +1,18 @@
 from datetime import datetime, timedelta
+import requests
 
-data_1 = datetime(2022, 12, 31)
-print(type(data_1.year))
-#
-# data_2 = datetime(2023, 1, 1)
-#
-# delta = (data_2-data_1)
-# print(type(delta.days))
+'2023-09-20 22:29:09.086886'
 
-date_1 = data_1.date()
-time_1 = data_1.time()
-print(date_1)
-print(time_1)
+date_1 = datetime.strptime('2023-09-20 22:29:09.086886', "%Y-%m-%d %H:%M:%S.%f")
 
-print(datetime.combine(date_1, time_1))
+date = datetime.now()
 
+url = 'http://localhost:14141/file/'
+data = {
+    "user_id": 1953960185,
+    "file_name": "BSRT00200_R_20230020000_01H_01S_MO.rnx",
+    "datetime": date,
+}
 
-dd = {datetime.now(): 1}
-print(dd)
+responce = requests.post(url=url, data=data)
+print(responce)

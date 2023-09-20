@@ -1,13 +1,11 @@
-import os
-
 from django.views import View
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
-import requests
+from datetime import datetime
 
-from .models import PersonModel, NoteModel
+from .models import PersonModel, NoteModel, FileDownloadModel
 
 
 class CheckView(View):
@@ -15,11 +13,33 @@ class CheckView(View):
         return HttpResponse("Server is working!!!")
 
 
-class PersonApiView(APIView):
+class FileView(APIView):
     def post(self, request: Request) -> Response:
+        person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
+        # print(type(request.POST['datetime']), request.POST['datetime'])
+        cursor = FileDownloadModel(
+                user_id=person,
+                station_name=request.POST['file_name'][:4],
+                file_name=request.POST['file_name'],
+                file_date=datetime.strptime(request.POST['datetime'], "%Y-%m-%d %H:%M:%S").date(),
+                file_time=datetime.strptime(request.POST['datetime'], "%Y-%m-%d %H:%M:%S").time(),
+            )
+        cursor.save()
+        return Response({'text': 'Data was save'})
+
+
+class PersonApiView(APIView):
+    def get(self, request: Request) -> Response:
         try:
             person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
-            return Response({'text': "Вы уже зарегистрированы"})
+            return Response({'text': person.authentication})
+        except:
+            return Response({'text': 3})
+
+    def post(self, request: Request) -> Response:
+        try:
+            person = PersonModel.objects.get(user_id=int(request.GET.get('user_id')))
+            return Response({'text': "Вы уже зарегистрированы. Если вам не открыт доступ то обратитесь к администрации"})
         except:
             cursor = PersonModel(
                 user_id=request.POST['user_id'],
@@ -27,7 +47,7 @@ class PersonApiView(APIView):
                 phone=request.POST['phone']
             )
             cursor.save()
-            return Response({'text': "Заявка подана"})
+            return Response({'text': "Заявка подана. Дождитесь одобрения администрации."})
 
 
 class NoteApiView(APIView):
@@ -41,23 +61,4 @@ class NoteApiView(APIView):
             cursor.save()
             return Response({'text': 'Запись внесена'})
 
-
-class FileView(APIView):
-    def get(self, request: Request) -> Response:
-        file_url = request.GET.get('url')       #URL for download file
-        file_name = request.GET.get('file_name')
-        file_res = requests.get(url=file_url)
-
-        TOKEN = "1955432392:AAFIKGS33j1DsT-zsWIAc_fs6ckOX4yjLQY"
-        method = 'sendDocument'
-        chat_id = 1953960185
-        file_name = 'dataset_1.zip'
-        with open("dataset_1.zip", 'rb') as file:
-
-            response = requests.post(
-                url=f'https://api.telegram.org/bot{TOKEN}/{method}',
-                data={'chat_id': chat_id, "text": 'text'},
-                files={'document': (file_name, file)}
-            ).json()        #get file ID
-        return Response({'file_id': response['result']['document']['file_id']})
 
