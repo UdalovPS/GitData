@@ -31,15 +31,20 @@ class FileView(APIView):
 class PersonApiView(APIView):
     def get(self, request: Request) -> Response:
         try:
-            person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
+            person = PersonModel.objects.get(user_id=int(request.data["user_id"]))
+            print(person.authentication)
             return Response({'text': person.authentication})
-        except:
+        except Exception as _ex:
+            print(_ex)
             return Response({'text': 3})
 
     def post(self, request: Request) -> Response:
         try:
-            person = PersonModel.objects.get(user_id=int(request.GET.get('user_id')))
-            return Response({'text': "Вы уже зарегистрированы. Если вам не открыт доступ то обратитесь к администрации"})
+            person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
+            if person.authentication == True:
+                return Response({'text': "Ваша заявка одобрена. Вам доступен весь фунционал."})
+            else:
+                return Response({'text': "Ваша заявка еще не одобрена. Обратитесь к администрации."})
         except:
             cursor = PersonModel(
                 user_id=request.POST['user_id'],

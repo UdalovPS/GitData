@@ -14,12 +14,9 @@ from parser import Parser
 
 load_dotenv()   #load bot TOKEN
 
-start_kb = types.ReplyKeyboardMarkup(resize_keyboard=True,)
-start_kb.row('Navigation Calendar', 'Dialog Calendar')
-
 
 """Aiogram objects"""
-bot = Bot(token=os.getenv('TEST_TOKEN'), parse_mode=types.ParseMode.HTML)
+bot = Bot(token=os.getenv('TOKEN_2'), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot, storage=MemoryStorage())
 logging.basicConfig(level=logging.INFO)
 
@@ -43,7 +40,7 @@ async def get_calendar(message: types.Message):
     if text == 3:
         await message.answer("Вы не зарегистрированы. Напишите команду <b>/reg</b> для регистрации")
     if text == False:
-        await message.answer("Администрация не одобрила вам заявку. Обратитесь к администрации")
+        await message.answer("Ваша заявка еще не одобрена. Обратитесь к администрации")
     if text == True:
         await message.answer("Выберите дату:", reply_markup=await SimpleCalendar().start_calendar())
 
@@ -102,9 +99,11 @@ async def process_simple_calendar(callback_query: types.CallbackQuery, callback_
                     keyboard.add(types.KeyboardButton(text=station))
                 await callback_query.message.answer("Выберите станцию.", reply_markup=keyboard)
                 await UrlCreator.range_time.set()
+
         except ValueError:
             await callback_query.message.answer("По данному году ничего не найдено.")
-
+        except requests.exceptions.ConnectionError:
+            await callback_query.message.answer("Ошибка с соединением сервера. Обратитесь к администрации")
 
 @dp.message_handler(state=UrlCreator.range_time)
 async def choice_station(message: types.Message, state: FSMContext):
@@ -211,6 +210,14 @@ async def contact(message):
         response = requests.post(url=url, data=data)
         text = response.json()['text']
         await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
+
+
+@dp.message_handler(content_types=['text'])
+async def check_working(message: types.Message):
+    """This method give information about bot commands"""
+    text = f"Для того чтобы зарегистрироваться отправьте команду <b>/reg</b>\n" \
+           f"Для того чтобы скачать информацию по станциям отправьте команду <b>/get</b>"
+    await message.answer(text)
 
 
 if __name__ == '__main__':
