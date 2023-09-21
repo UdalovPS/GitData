@@ -41,6 +41,12 @@ TEG_DICT = {
 }
 
 
+@dp.message_handler(commands=['check'])
+async def check_working(message: types.Message):
+    """This method check bot working"""
+    await message.answer('Bot is working')
+
+
 @dp.message_handler(content_types=['text'])
 async def add_note(message: types.Message):
     print("I see message")

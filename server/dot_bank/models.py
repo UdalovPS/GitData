@@ -9,8 +9,8 @@ class PersonModel(models.Model):
     ]
     user_id = models.BigIntegerField(primary_key=True)
     role = models.IntegerField(choices=ROLE_CHOISES, default=0, verbose_name='Роль')
-    name = models.CharField(max_length=50, verbose_name='Имя')
-    phone = models.CharField(max_length=11, verbose_name='Номер телефона')
+    name = models.CharField(max_length=50, verbose_name='Имя пользователя')
+    phone = models.CharField(max_length=12, verbose_name='Номер телефона')
     authentication = models.BooleanField(default=False, verbose_name="Подтверждение")
 
     def __str__(self):
@@ -41,3 +41,16 @@ class NoteModel(models.Model):
 
     class Meta:
         verbose_name_plural = "Записи сотрудников"
+
+
+class FileDownloadModel(models.Model):
+    user_id = models.ForeignKey("PersonModel", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Имя пользователя")
+    station_name = models.CharField(max_length=4, verbose_name="Название станции")
+    file_name = models.CharField(max_length=100, verbose_name='Имя файла')
+    file_date = models.DateField(verbose_name='Дата файла')
+    file_time = models.TimeField(verbose_name='Время файла')
+    note_date = models.DateField(auto_now=True, verbose_name='Дата запроса')
+    note_time = models.TimeField(auto_now=True, verbose_name='Время запроса')
+
+    class Meta:
+        verbose_name_plural = "Запросы станций"
