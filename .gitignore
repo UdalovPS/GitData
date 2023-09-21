@@ -5,7 +5,7 @@
 __pycache__
 db.sqlite3
 media
-baggage
+baggage.py
 
 # Backup files #
 *.bak
