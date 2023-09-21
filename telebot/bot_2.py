@@ -8,7 +8,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram_calendar import simple_cal_callback, SimpleCalendar
+from simple_calendar import calendar_callback, SimpleCalendar
 
 from parser import Parser
 
@@ -45,10 +45,11 @@ async def get_calendar(message: types.Message):
         await message.answer("Выберите дату:", reply_markup=await SimpleCalendar().start_calendar())
 
 
-@dp.callback_query_handler(simple_cal_callback.filter())
+@dp.callback_query_handler(calendar_callback.filter())
 async def process_simple_calendar(callback_query: types.CallbackQuery, callback_data: dict, state: FSMContext):
     selected, date = await SimpleCalendar().process_selection(callback_query, callback_data)
     if selected:            #if you choice date button
+        print(date)
         try:
             await callback_query.message.delete()
             if date.date() > datetime.now().date():
