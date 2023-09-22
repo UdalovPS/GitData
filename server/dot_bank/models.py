@@ -1,5 +1,10 @@
 from django.db import models
-import datetime
+import requests
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()       #load bot token
 
 
 class PersonModel(models.Model):
@@ -12,6 +17,21 @@ class PersonModel(models.Model):
     name = models.CharField(max_length=50, verbose_name='Имя пользователя')
     phone = models.CharField(max_length=12, verbose_name='Номер телефона')
     authentication = models.BooleanField(default=False, verbose_name="Подтверждение")
+
+    def save(self, *args, **kwargs):
+        if self.authentication == True:
+            method = "sendMessage"
+            print(self.user_id)
+            print(os.getenv('TOKEN_2'))
+            response = requests.post(
+            url='https://api.telegram.org/bot{0}/{1}'.format(os.getenv('TOKEN_2'), method),
+            data={'chat_id': self.user_id, 'text': 'Ваша заявка была одобрена'}
+            ).json()
+
+        print("[INFO] was been_save", self.user_id, self.authentication)
+        #parent method
+        super(PersonModel, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return self.name

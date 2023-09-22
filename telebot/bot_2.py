@@ -97,7 +97,7 @@ async def process_simple_calendar(callback_query: types.CallbackQuery, callback_
                 #create buttons
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 for station in today_station_url:
-                    keyboard.add(types.KeyboardButton(text=station))
+                    keyboard.add(types.KeyboardButton(text=station[:-1]))
                 await callback_query.message.answer("Выберите станцию.", reply_markup=keyboard)
                 await UrlCreator.range_time.set()
 
@@ -109,7 +109,7 @@ async def process_simple_calendar(callback_query: types.CallbackQuery, callback_
 @dp.message_handler(state=UrlCreator.range_time)
 async def choice_station(message: types.Message, state: FSMContext):
     """This method choice range"""
-    await state.update_data(station=message.text)
+    await state.update_data(station=f"{message.text}/")
     await message.answer("Напиши диапазон времени по МСК + 2. Например если нужно получить данные с <b>8:00</b> по <b>12:00</b> По МСК то напиши:\n <b>10-14</b>",
                          reply_markup=types.ReplyKeyboardRemove())
     await UrlCreator.files.set()
@@ -119,57 +119,63 @@ async def choice_station(message: types.Message, state: FSMContext):
 async def choice_station(message: types.Message, state: FSMContext):
     """This method find files for need time range"""
     data = await state.get_data()       #load data from memory
-    time_split_list = message.text.split("-")       #split to START_TIME - END_TIME
-    start_time = (datetime.strptime(time_split_list[0], "%H")).time()
-    start_datetime = datetime.combine(data['choice_date'], start_time)
-    # print(start_datetime.date(), "->", start_datetime.time())
 
-    end_time = (datetime.strptime(time_split_list[1], "%H")).time()
-    end_datetime = datetime.combine(data['choice_date'], end_time)
-    # print(end_datetime.date(), "->", end_datetime.time())
+    try:
+        time_split_list = message.text.split("-")       #split to START_TIME - END_TIME
+        start_time = (datetime.strptime(time_split_list[0], "%H")).time()
+        start_datetime = datetime.combine(data['choice_date'], start_time)
+        # print(start_datetime.date(), "->", start_datetime.time())
 
-    today_station_url = f"{data['today_url']}{data['station']}"
-    p = Parser(today_station_url)
-    today_files_url_list = p.get_href_list()        #get files url, append in list
-    if today_files_url_list != []:
-        time_obj_list = p.get_datetime()                #get times url, append in list
-        time_url_tuple = tuple(zip(time_obj_list, today_files_url_list))  #create tuple index 0 -> time: index 1 -> file_name
-        today_choice_files = [(value[1], value[0]) for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
-    else:
-        today_choice_files = ()
+        end_time = (datetime.strptime(time_split_list[1], "%H")).time()
+        end_datetime = datetime.combine(data['choice_date'], end_time)
+        # print(end_datetime.date(), "->", end_datetime.time())
 
-    if data['yesterday_url'] == None:
-        yesterday_choice_files = ()
-    else:
-        yesterday_station_url = f"{data['yesterday_url']}{data['station']}"
-        p = Parser(yesterday_station_url)
-        yesterday_files_url_list = p.get_href_list()        #get files url, append in list
-        if yesterday_files_url_list != []:
-            time_obj_list = p.get_datetime()                    #get times url, append in list
-            time_url_tuple = tuple(zip(time_obj_list, yesterday_files_url_list))  #create tuple index 0 -> time: index 1 -> file_name
-            yesterday_choice_files = [(value[1], value[0]) for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
+        today_station_url = f"{data['today_url']}{data['station']}"
+        p = Parser(today_station_url)
+        today_files_url_list = p.get_href_list()        #get files url, append in list
+        if today_files_url_list != []:
+            time_obj_list = p.get_datetime()                #get times url, append in list
+            time_url_tuple = tuple(zip(time_obj_list, today_files_url_list))  #create tuple index 0 -> time: index 1 -> file_name
+            today_choice_files = [(value[1], value[0]) for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
         else:
+            today_choice_files = ()
+
+        if data['yesterday_url'] == None:
             yesterday_choice_files = ()
+        else:
+            yesterday_station_url = f"{data['yesterday_url']}{data['station']}"
+            p = Parser(yesterday_station_url)
+            yesterday_files_url_list = p.get_href_list()        #get files url, append in list
+            if yesterday_files_url_list != []:
+                time_obj_list = p.get_datetime()                    #get times url, append in list
+                time_url_tuple = tuple(zip(time_obj_list, yesterday_files_url_list))  #create tuple index 0 -> time: index 1 -> file_name
+                yesterday_choice_files = [(value[1], value[0]) for value in time_url_tuple if (value[0] >= start_datetime and value[0] <= end_datetime)]  #create list with need file
+            else:
+                yesterday_choice_files = ()
 
-    if today_choice_files == () and yesterday_choice_files == ():
-        await message.answer("По текущему времени файлов не найдено.")
-        await state.finish()
-    else:
-        await message.answer(f"Найдено <b>{len(yesterday_choice_files) + len(today_choice_files)}</b> файлов. Дождитесь загрузки.")
+        if today_choice_files == () and yesterday_choice_files == ():
+            await message.answer("По текущему времени файлов не найдено.")
+            await state.finish()
+        else:
+            await message.answer(f"Найдено <b>{len(yesterday_choice_files) + len(today_choice_files)}</b> файлов. Дождитесь загрузки.")
 
-        if today_choice_files != ():
-            for file_url in today_choice_files:
-                full_url = f"{data['today_url']}{data['station']}{file_url[0]}"
-                responce = requests.get(url=full_url)
-                post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
-                await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
+            if today_choice_files != ():
+                for file_url in today_choice_files:
+                    full_url = f"{data['today_url']}{data['station']}{file_url[0]}"
+                    responce = requests.get(url=full_url)
+                    post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
+                    await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
 
-        if yesterday_choice_files != ():
-            for file_url in yesterday_choice_files:
-                full_url = f"{data['yesterday_url']}{data['station']}{file_url[0]}"
-                responce = requests.get(url=full_url)
-                post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
-                await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
+            if yesterday_choice_files != ():
+                for file_url in yesterday_choice_files:
+                    full_url = f"{data['yesterday_url']}{data['station']}{file_url[0]}"
+                    responce = requests.get(url=full_url)
+                    post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
+                    await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
+            await state.finish()
+    except Exception as _ex:
+        print(_ex)
+        await message.answer("Не корректно введет временной интервал.")
         await state.finish()
 
 def post_download_statistic(user_id: int, file_name: str, date: datetime):
