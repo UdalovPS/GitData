@@ -33,7 +33,7 @@ MAIN_URL = "http://212.220.202.105:8080/RINEX/RINEX/"
 @dp.message_handler(commands=['get'])
 async def get_calendar(message: types.Message):
     """START calendar method"""
-    url = 'http://localhost:14141/person/'
+    url = 'http://212.109.197.194:80/person/'
     data = {'user_id': message.from_user.id}
     response = requests.get(url=url, data=data)
     text = response.json()['text']
@@ -172,7 +172,7 @@ async def choice_station(message: types.Message, state: FSMContext):
         await state.finish()
 
 def post_download_statistic(user_id: int, file_name: str, date: datetime):
-    url = 'http://localhost:14141/file/'
+    url = 'http://212.109.197.194:80/file/'
     data = {
         "user_id": user_id,
         "file_name": file_name,
@@ -206,7 +206,7 @@ async def contact(message):
             'name': message.from_user.username,
             'phone': message.contact.phone_number
         }
-        url = 'http://localhost:14141/person/'
+        url = 'http://212.109.197.194:80/person/'
         response = requests.post(url=url, data=data)
         text = response.json()['text']
         await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
