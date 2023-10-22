@@ -110,7 +110,7 @@ async def process_simple_calendar(callback_query: types.CallbackQuery, callback_
 async def choice_station(message: types.Message, state: FSMContext):
     """This method choice range"""
     await state.update_data(station=f"{message.text}/")
-    await message.answer("Напиши диапазон времени по МСК + 2. Например если нужно получить данные с <b>8:00</b> по <b>12:00</b> По МСК то напиши:\n <b>10-14</b>",
+    await message.answer("Напишите диапазон времени в формате <b>10-12</b>, если вам нужен диапазон данных с <b>10:00</b> до <b>12:00</b> по местному времени Екатеринбург (+5:00).",
                          reply_markup=types.ReplyKeyboardRemove())
     await UrlCreator.files.set()
 
