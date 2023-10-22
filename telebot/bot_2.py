@@ -171,7 +171,7 @@ async def choice_station(message: types.Message, state: FSMContext):
                     full_url = f"{data['yesterday_url']}{data['station']}{file_url[0]}"
                     responce = requests.get(url=full_url)
                     post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
-                    await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
+                    await bot.send_document(message.chat.id, document=(file_url[0], responce.content))
             await state.finish()
     except Exception as _ex:
         print(_ex)
