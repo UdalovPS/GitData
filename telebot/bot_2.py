@@ -163,8 +163,8 @@ async def choice_station(message: types.Message, state: FSMContext):
                 for file_url in today_choice_files:
                     full_url = f"{data['today_url']}{data['station']}{file_url[0]}"
                     responce = requests.get(url=full_url)
-                    post_download_statistic(user_id=message.from_user.id, file_name=file_url[0][:-1], date=file_url[1])
-                    await bot.send_document(message.chat.id, document=(file_url[0][:-1], responce.content))
+                    post_download_statistic(user_id=message.from_user.id, file_name=file_url[0], date=file_url[1])
+                    await bot.send_document(message.chat.id, document=(file_url[0], responce.content))
 
             if yesterday_choice_files != ():
                 for file_url in yesterday_choice_files:
@@ -200,7 +200,7 @@ async def registraion_user(message: types.Message):
         keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
         button_phone = types.KeyboardButton(text="Подать заявку", request_contact=True)
         keyboard.add(button_phone)
-        await message.answer("Хотите зарегистрироваться?", reply_markup=keyboard)
+        await message.answer('Хотите зарегистрироваться? Если да, то нажмите кнопку "Подать заявку" ниже', reply_markup=keyboard)
     else:
         await message.answer("У вашего профиля отсутствует <b>Имя пользователя</b>. Зайдите в настройки телеграмма и добавьте его.")
 
