@@ -106,6 +106,7 @@ async def process_simple_calendar(callback_query: types.CallbackQuery, callback_
         except requests.exceptions.ConnectionError:
             await callback_query.message.answer("Ошибка с соединением сервера. Обратитесь к администрации")
 
+
 @dp.message_handler(state=UrlCreator.range_time)
 async def choice_station(message: types.Message, state: FSMContext):
     """This method choice range"""
@@ -124,11 +125,9 @@ async def choice_station(message: types.Message, state: FSMContext):
         time_split_list = message.text.split("-")       #split to START_TIME - END_TIME
         start_time = (datetime.strptime(time_split_list[0], "%H")).time()
         start_datetime = datetime.combine(data['choice_date'], start_time)
-        # print(start_datetime.date(), "->", start_datetime.time())
 
         end_time = (datetime.strptime(time_split_list[1], "%H")).time()
         end_datetime = datetime.combine(data['choice_date'], end_time)
-        # print(end_datetime.date(), "->", end_datetime.time())
 
         today_station_url = f"{data['today_url']}{data['station']}"
         p = Parser(today_station_url)
@@ -174,7 +173,8 @@ async def choice_station(message: types.Message, state: FSMContext):
                     await bot.send_document(message.chat.id, document=(file_url[0], responce.content))
             await state.finish()
     except Exception as _ex:
-        print(_ex)
+        print(f"error to find time interval: {_ex}")
+    # except IndexError:
         await message.answer("Не корректно введет временной интервал.")
         await state.finish()
 
