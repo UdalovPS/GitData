@@ -30,7 +30,7 @@ class UrlCreator(StatesGroup):
 @dp.message_handler(commands=['get'])
 async def get_calendar(message: types.Message):
     """START calendar method"""
-    url = f'http://{os.getenv("SERVER_URL")}/person/'
+    url = f'{os.getenv("SERVER_URL")}/person/'
     data = {'user_id': message.from_user.id}
     response = requests.get(url=url, data=data)
     text = response.json()['text']
@@ -176,7 +176,7 @@ async def choice_station(message: types.Message, state: FSMContext):
         await state.finish()
 
 def post_download_statistic(user_id: int, file_name: str, date: datetime):
-    url = f'http://{os.getenv("SERVER_URL")}/file/'
+    url = f'{os.getenv("SERVER_URL")}/file/'
     data = {
         "user_id": user_id,
         "file_name": file_name,
@@ -211,7 +211,7 @@ async def contact(message):
             'phone': message.contact.phone_number,
             "bot_number": 2
         }
-        url = f'http://{os.getenv("SERVER_URL")}/person/'
+        url = f'{os.getenv("SERVER_URL")}/person/'
         response = requests.post(url=url, data=data)
         text = response.json()['text']
         await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
