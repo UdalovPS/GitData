@@ -27,13 +27,10 @@ class UrlCreator(StatesGroup):
     files = State()
 
 
-MAIN_URL = "http://212.220.202.105:8080/RINEX/RINEX/"
-
-
 @dp.message_handler(commands=['get'])
 async def get_calendar(message: types.Message):
     """START calendar method"""
-    url = 'http://212.109.197.194:80/person/'
+    url = f'http://{os.getenv("SERVER_URL")}/person/'
     data = {'user_id': message.from_user.id}
     response = requests.get(url=url, data=data)
     text = response.json()['text']
@@ -61,26 +58,26 @@ async def process_simple_calendar(callback_query: types.CallbackQuery, callback_
 
                 if today == 1:      #if you choice first day in the year
                     yesterday = 365
-                    p = Parser(f'{MAIN_URL}{year}/')
+                    p = Parser(f'{os.getenv("POINTS_URL")}{year}/')
                     today_href_dict = p.get_date_href_dict()
                     if today_href_dict == {}:     #user get old year
                         raise ValueError
                     else:
-                        today_url = f"{MAIN_URL}{year}/{today_href_dict[today]}"
-                    p = Parser(f'{MAIN_URL}{year-1}/')
+                        today_url = f"{os.getenv('POINTS_URL')}{year}/{today_href_dict[today]}"
+                    p = Parser(f'{os.getenv("POINTS_URL")}{year-1}/')
                     yesterday_href_dict = p.get_date_href_dict()
                     if yesterday_href_dict != {}:
-                        yesterday_url = f"{MAIN_URL}{year-1}/{yesterday_href_dict[yesterday]}"
+                        yesterday_url = f"{os.getenv('POINTS_URL')}{year-1}/{yesterday_href_dict[yesterday]}"
                     else:
                         yesterday_url = None
                 else:
                     yesterday = today - 1
-                    p = Parser(f'{MAIN_URL}{year}/')
+                    p = Parser(f'{os.getenv("POINTS_URL")}{year}/')
                     href_dict = p.get_date_href_dict()      #scrap data dict with date and date_url
                     if href_dict == {}:     #user get old year
                         raise ValueError
-                    today_url = f"{MAIN_URL}{year}/{href_dict[today]}"
-                    yesterday_url = f"{MAIN_URL}{year}/{href_dict[yesterday]}"
+                    today_url = f"{os.getenv('POINTS_URL')}{year}/{href_dict[today]}"
+                    yesterday_url = f"{os.getenv('POINTS_URL')}{year}/{href_dict[yesterday]}"
 
                 await state.update_data(today_url=today_url)        #save today url in memory
                 await state.update_data(yesterday_url=yesterday_url)    #save yesteray url in memory
@@ -179,7 +176,7 @@ async def choice_station(message: types.Message, state: FSMContext):
         await state.finish()
 
 def post_download_statistic(user_id: int, file_name: str, date: datetime):
-    url = 'http://212.109.197.194:80/file/'
+    url = f'http://{os.getenv("SERVER_URL")}/file/'
     data = {
         "user_id": user_id,
         "file_name": file_name,
@@ -211,9 +208,10 @@ async def contact(message):
         data = {
             'user_id': message.contact.user_id,
             'name': message.from_user.username,
-            'phone': message.contact.phone_number
+            'phone': message.contact.phone_number,
+            "bot_number": 2
         }
-        url = 'http://212.109.197.194:80/person/'
+        url = f'http://{os.getenv("SERVER_URL")}/person/'
         response = requests.post(url=url, data=data)
         text = response.json()['text']
         await message.answer(text, reply_markup=types.ReplyKeyboardRemove())

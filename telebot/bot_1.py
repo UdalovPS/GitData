@@ -52,7 +52,7 @@ async def add_note(message: types.Message):
     print("I see message")
     teg = message.text[:2]
     if teg.lower() in TEG_DICT and message.text[2] == " ":
-        url = 'http://212.109.197.194:80/note/'
+        url = f"{os.getenv('SERVER_URL')}/note/"
         data = {
             'user_id': message.from_user.id,
             'username': message.from_user.username,

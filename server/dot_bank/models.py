@@ -12,20 +12,29 @@ class PersonModel(models.Model):
         (0, "Клиент"),
         (1, "Сотрудник"),
     ]
+    BOTS_DATA = [
+        (2, "UciDataBot"),
+        (3, "GD_supBot")
+    ]
     user_id = models.BigIntegerField(primary_key=True)
     role = models.IntegerField(choices=ROLE_CHOISES, default=0, verbose_name='Роль')
     name = models.CharField(max_length=50, verbose_name='Имя пользователя')
     phone = models.CharField(max_length=12, verbose_name='Номер телефона')
     authentication = models.BooleanField(default=False, verbose_name="Подтверждение")
+    bot_number = models.IntegerField(default=2, verbose_name="Имя бота", choices=BOTS_DATA)
 
     def save(self, *args, **kwargs):
         if self.authentication == True:
             method = "sendMessage"
             print(self.user_id)
             print(os.getenv('TOKEN_2'))
+            if self.bot_number == 2:
+                token = os.getenv('TOKEN_2')
+            elif self.bot_number == 3:
+                token = os.getenv('TOKEN_3')
             response = requests.post(
-            url='https://api.telegram.org/bot{0}/{1}'.format(os.getenv('TOKEN_2'), method),
-            data={'chat_id': self.user_id, 'text': 'Ваша заявка была одобрена'}
+                url=f'https://api.telegram.org/bot{token}/{method}',
+                json={'chat_id': self.user_id, 'text': 'Ваша заявка была одобрена'}
             ).json()
 
         print("[INFO] was been_save", self.user_id, self.authentication)
@@ -74,3 +83,27 @@ class FileDownloadModel(models.Model):
 
     class Meta:
         verbose_name_plural = "Запросы станций"
+
+
+class InstuctionsDownloadModel(models.Model):
+    user_id = models.ForeignKey("PersonModel", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Имя пользователя")
+    file_name = models.CharField(max_length=100, verbose_name='Имя файла')
+    note_date = models.DateField(auto_now=True, verbose_name='Дата запроса')
+    note_time = models.TimeField(auto_now=True, verbose_name='Время запроса')
+
+    class Meta:
+        verbose_name_plural = "Запросы инструкций"
+
+
+class FeedBackModel(models.Model):
+    BOTS_DATA = [
+        (2, "UciDataBot"),
+        (3, "GD_supBot")
+    ]
+    user_id = models.ForeignKey("PersonModel", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Имя пользователя")
+    text = models.CharField(max_length=300, verbose_name="Текст отзыва")
+    processed = models.BooleanField(default=False, verbose_name="Обработан")
+    bot_number = models.IntegerField(default=2, verbose_name="Имя бота", choices=BOTS_DATA)
+
+    class Meta:
+        verbose_name_plural = "Отзывы"

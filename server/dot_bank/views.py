@@ -5,7 +5,7 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from datetime import datetime
 
-from .models import PersonModel, NoteModel, FileDownloadModel
+from .models import PersonModel, NoteModel, FileDownloadModel, InstuctionsDownloadModel, FeedBackModel
 
 
 class CheckView(View):
@@ -42,14 +42,15 @@ class PersonApiView(APIView):
         try:
             person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
             if person.authentication == True:
-                return Response({'text': "Ваша заявка одобрена. Вам доступен весь фунционал."})
+                return Response({'text': "Ваша заявка одобрена. Вам доступен весь функционал."})
             else:
                 return Response({'text': "Ваша заявка еще не одобрена. Обратитесь к администрации."})
         except:
             cursor = PersonModel(
                 user_id=request.POST['user_id'],
                 name=request.POST['name'],
-                phone=request.POST['phone']
+                phone=request.POST['phone'],
+                bot_number=request.POST["bot_number"]
             )
             cursor.save()
             return Response({'text': "Заявка подана. Дождитесь одобрения администрации."})
@@ -67,3 +68,24 @@ class NoteApiView(APIView):
             return Response({'text': 'Запись внесена'})
 
 
+class InstructionView(APIView):
+    def post(self, request: Request) -> Response:
+        person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
+        cursor = InstuctionsDownloadModel(
+                user_id=person,
+                file_name=request.POST['file_name'],
+            )
+        cursor.save()
+        return Response({'text': 'Data was save'})
+
+
+class FeedBackView(APIView):
+    def post(self, request: Request) -> Response:
+        person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
+        cursor = FeedBackModel(
+                user_id=person,
+                text=request.POST['text'],
+                bot_number=request.POST['bot_number']
+            )
+        cursor.save()
+        return Response({'text': 'Data was save'})

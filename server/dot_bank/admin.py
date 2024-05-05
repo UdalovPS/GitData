@@ -30,3 +30,16 @@ class NoteModelAdmin(admin.ModelAdmin):
     list_filter = ['username', 'note_type']
     search_fields = ['username', 'text']
 
+
+@admin.register(InstuctionsDownloadModel)
+class InstuctionsDownloadModelAdmin(admin.ModelAdmin):
+    list_display = ["user_id", "file_name", "note_date", "note_time"]
+    list_filter = ["user_id", "file_name"]
+    search_fields = ["file_name"]
+
+
+@admin.register(FeedBackModel)
+class FeedBackModelAdmin(admin.ModelAdmin):
+    list_display = ["user_id", "text", "bot_number", "processed"]
+    list_filter = ["user_id", "bot_number", "processed"]
+    search_fields = ["text"]
