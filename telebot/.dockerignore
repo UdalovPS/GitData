@@ -1,0 +1,11 @@
+baggage.py
+baggage.json
+oop.py
+
+.git
+.cache
+.pytest_cache
+.idea
+
+venv
+l_venv

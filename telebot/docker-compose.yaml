@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  bot_3:
+    build:
+      context: .
+    container_name: bot_3
+    command: python bot_3.py
+    env_file:
+      - .env
+    mem_limit: 512m
+    restart: always
+    network_mode: host
