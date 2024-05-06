@@ -81,8 +81,11 @@ async def choice_station(message: types.Message, state: FSMContext):
                 tmp_list = memory_data["url"].split("/")
                 if tmp_list[-1] == "":
                     tmp_list.pop()
-                tmp_list.pop()
-                url = "/".join(tmp_list) + "/"
+                del_url = tmp_list.pop()
+                if del_url == "GD_data":
+                    url = "/".join(tmp_list) + "/" + del_url + "/"
+                else:
+                    url = "/".join(tmp_list) + "/"
             else:
                 url = memory_data["url"] + p.get_encode_one_node(node=message.text) + "/"
             check_file = p.check_this_is_file(name=message.text)
