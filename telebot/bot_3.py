@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 """Aiogram objects"""
-bot = Bot(token=os.getenv('TOKEN_3'), parse_mode=types.ParseMode.HTML)
+bot = Bot(token=os.getenv('TOKEN_2'), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot, storage=MemoryStorage())
 logging.basicConfig(level=logging.INFO)
 
@@ -76,7 +76,15 @@ async def choice_station(message: types.Message, state: FSMContext):
         else:
             memory_data = await state.get_data()       # load data from memory
             p = Parser(url=os.getenv("INSTRUCTION_URL"))
-            url = memory_data["url"] + p.get_encode_one_node(node=message.text) + "/"
+
+            if message.text == "Назад \U0001F519":
+                tmp_list = memory_data["url"].split("/")
+                if tmp_list[-1] == "":
+                    tmp_list.pop()
+                tmp_list.pop()
+                url = "/".join(tmp_list) + "/"
+            else:
+                url = memory_data["url"] + p.get_encode_one_node(node=message.text) + "/"
             check_file = p.check_this_is_file(name=message.text)
             if check_file:
                 logger.info(f"File is found to url: {url}")
@@ -92,6 +100,7 @@ async def choice_station(message: types.Message, state: FSMContext):
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 for directory in decode_list:
                     keyboard.add(types.KeyboardButton(text=directory))
+                keyboard.add(types.KeyboardButton(text="Назад \U0001F519"))
                 keyboard.add(types.KeyboardButton(text="Не найдено нужное \U0000274C"))
                 await message.answer("Выберите тему или файл", reply_markup=keyboard)
     except Exception as _ex:
