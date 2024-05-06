@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 """Aiogram objects"""
-bot = Bot(token=os.getenv('TOKEN_2'), parse_mode=types.ParseMode.HTML)
+bot = Bot(token=os.getenv('TOKEN_3'), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot, storage=MemoryStorage())
 logging.basicConfig(level=logging.INFO)
 
