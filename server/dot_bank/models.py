@@ -41,7 +41,6 @@ class PersonModel(models.Model):
         #parent method
         super(PersonModel, self).save(*args, **kwargs)
 
-
     def __str__(self):
         return self.name
 
@@ -142,3 +141,9 @@ class PersonInstructionModel(models.Model):
         print("[INFO] was been_save", self.user_id, self.authentication)
         #parent method
         super(PersonInstructionModel, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Люди для инструкций"
