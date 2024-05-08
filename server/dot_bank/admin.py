@@ -47,8 +47,4 @@ class FeedBackModelAdmin(admin.ModelAdmin):
 
 @admin.register(PersonInstructionModel)
 class PersonModelAdmin(admin.ModelAdmin):
-    list_display = [
-        'user_id', 'name', 'role', 'phone', 'authentication'
-    ]
-    list_filter = ['name', 'role', 'authentication']
-    search_fields = ['name', 'phone']
+    list_display = ['user_id']

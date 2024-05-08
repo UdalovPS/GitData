@@ -5,7 +5,8 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from datetime import datetime
 
-from .models import PersonModel, NoteModel, FileDownloadModel, InstuctionsDownloadModel, FeedBackModel
+from .models import PersonModel, NoteModel, FileDownloadModel, InstuctionsDownloadModel
+from .models import PersonInstructionModel, FeedBackModel
 
 
 class CheckView(View):
@@ -46,13 +47,25 @@ class PersonApiView(APIView):
             else:
                 return Response({'text': "Ваша заявка еще не одобрена. Обратитесь к администрации."})
         except:
-            cursor = PersonModel(
-                user_id=request.POST['user_id'],
-                name=request.POST['name'],
-                phone=request.POST['phone'],
-                bot_number=request.POST["bot_number"]
-            )
-            cursor.save()
+            if request.POST["bot_number"] == 3:
+                cursor = PersonModel(
+                    user_id=request.POST['user_id'],
+                    name=request.POST['name'],
+                    phone=request.POST['phone'],
+                    bot_number=request.POST["bot_number"],
+                    authentication=True
+                )
+                cursor.save()
+                cursor_2 = PersonInstructionModel(user_id=cursor)
+                cursor_2.save()
+            else:
+                cursor = PersonModel(
+                    user_id=request.POST['user_id'],
+                    name=request.POST['name'],
+                    phone=request.POST['phone'],
+                    bot_number=request.POST["bot_number"]
+                )
+                cursor.save()
             return Response({'text': "Заявка подана. Дождитесь одобрения администрации."})
 
 
@@ -90,30 +103,3 @@ class FeedBackView(APIView):
         cursor.save()
         return Response({'text': 'Data was save'})
 
-
-class PersonInstructionApiView(APIView):
-    def get(self, request: Request) -> Response:
-        try:
-            person = PersonModel.objects.get(user_id=int(request.data["user_id"]))
-            print(person.authentication)
-            return Response({'text': person.authentication})
-        except Exception as _ex:
-            print(_ex)
-            return Response({'text': 3})
-
-    def post(self, request: Request) -> Response:
-        try:
-            person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
-            if person.authentication == True:
-                return Response({'text': "Ваша заявка одобрена. Вам доступен весь функционал."})
-            else:
-                return Response({'text': "Ваша заявка еще не одобрена. Обратитесь к администрации."})
-        except:
-            cursor = PersonModel(
-                user_id=request.POST['user_id'],
-                name=request.POST['name'],
-                phone=request.POST['phone'],
-                bot_number=request.POST["bot_number"]
-            )
-            cursor.save()
-            return Response({'text': "Заявка подана. Дождитесь одобрения администрации."})

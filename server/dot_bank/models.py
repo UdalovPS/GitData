@@ -109,41 +109,7 @@ class FeedBackModel(models.Model):
 
 
 class PersonInstructionModel(models.Model):
-    ROLE_CHOISES = [
-        (0, "Клиент"),
-        (1, "Сотрудник"),
-    ]
-    BOTS_DATA = [
-        (2, "UciDataBot"),
-        (3, "GD_supBot")
-    ]
-    user_id = models.BigIntegerField(primary_key=True)
-    role = models.IntegerField(choices=ROLE_CHOISES, default=0, verbose_name='Роль')
-    name = models.CharField(max_length=50, verbose_name='Имя пользователя')
-    phone = models.CharField(max_length=12, verbose_name='Номер телефона')
-    authentication = models.BooleanField(default=True, verbose_name="Подтверждение")
-    bot_number = models.IntegerField(default=2, verbose_name="Имя бота", choices=BOTS_DATA)
-
-    def save(self, *args, **kwargs):
-        if self.authentication == True:
-            method = "sendMessage"
-            print(self.user_id)
-            print(os.getenv('TOKEN_2'))
-            if self.bot_number == 2:
-                token = os.getenv('TOKEN_2')
-            elif self.bot_number == 3:
-                token = os.getenv('TOKEN_3')
-            response = requests.post(
-                url=f'https://api.telegram.org/bot{token}/{method}',
-                json={'chat_id': self.user_id, 'text': 'Ваша заявка была одобрена'}
-            ).json()
-
-        print("[INFO] was been_save", self.user_id, self.authentication)
-        #parent method
-        super(PersonInstructionModel, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
+    user_id = models.ForeignKey("PersonModel", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Имя пользователя")
 
     class Meta:
-        verbose_name_plural = "Люди для инструкций"
+        verbose_name_plural = "Люди запрашивающие инструкции"
