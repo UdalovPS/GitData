@@ -27,6 +27,7 @@ class PersonModel(models.Model):
         if self.authentication == True:
             method = "sendMessage"
             print(self.user_id)
+            print(f"save_bot_number: {self.bot_number}, {type(self.bot_number)}")
             print(os.getenv('TOKEN_2'))
             if self.bot_number == 2:
                 token = os.getenv('TOKEN_2')

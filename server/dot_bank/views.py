@@ -47,17 +47,20 @@ class PersonApiView(APIView):
             else:
                 return Response({'text': "Ваша заявка еще не одобрена. Обратитесь к администрации."})
         except:
-            if request.POST["bot_number"] == 3:
+            print(f"BOT NUMBER: {request.POST['bot_number']}")
+            if int(request.POST["bot_number"]) == 3:
                 cursor = PersonModel(
                     user_id=request.POST['user_id'],
                     name=request.POST['name'],
                     phone=request.POST['phone'],
-                    bot_number=request.POST["bot_number"],
+                    bot_number=int(request.POST["bot_number"]),
                     authentication=True
                 )
                 cursor.save()
+                print("save person")
                 cursor_2 = PersonInstructionModel(user_id=cursor)
                 cursor_2.save()
+                print("save inst person")
             else:
                 cursor = PersonModel(
                     user_id=request.POST['user_id'],
