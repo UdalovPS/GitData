@@ -153,7 +153,7 @@ async def check_working(message: types.Message):
 
 async def check_registartion(message: types.Message) -> Union[bool, int]:
     """This method check client registration"""
-    url = f'{os.getenv("SERVER_URL")}/person/'
+    url = f'{os.getenv("SERVER_URL")}/person/instruction/'
     data = {'user_id': message.from_user.id}
     response = requests.get(url=url, data=data)
     logger.info(f"registration client: {message.from_user.id} -> {response.json()['text']}")
@@ -180,7 +180,7 @@ async def contact(message):
             'phone': message.contact.phone_number,
             "bot_number": 3
         }
-        url = f'{os.getenv("SERVER_URL")}/person/'
+        url = f'{os.getenv("SERVER_URL")}/person/instruction/'
         response = requests.post(url=url, data=data)
         text = response.json()['text']
         await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
@@ -196,3 +196,4 @@ async def check_working(message: types.Message):
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
+

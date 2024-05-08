@@ -43,3 +43,12 @@ class FeedBackModelAdmin(admin.ModelAdmin):
     list_display = ["user_id", "text", "bot_number", "processed"]
     list_filter = ["user_id", "bot_number", "processed"]
     search_fields = ["text"]
+
+
+@admin.register(PersonInstructionModel)
+class PersonModelAdmin(admin.ModelAdmin):
+    list_display = [
+        'user_id', 'name', 'role', 'phone', 'authentication'
+    ]
+    list_filter = ['name', 'role', 'authentication']
+    search_fields = ['name', 'phone']
