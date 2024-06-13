@@ -37,6 +37,11 @@ class InstuctionsDownloadModelAdmin(admin.ModelAdmin):
     list_filter = ["user_id", "file_name"]
     search_fields = ["file_name"]
 
+@admin.register(EfemerideDownloadModel)
+class EfemerideDownloadModelAdmin(admin.ModelAdmin):
+    list_display = ["user_id", "file_name", "note_date", "note_time"]
+    list_filter = ["user_id", "file_name"]
+    search_fields = ["file_name"]
 
 @admin.register(FeedBackModel)
 class FeedBackModelAdmin(admin.ModelAdmin):

@@ -14,7 +14,8 @@ class PersonModel(models.Model):
     ]
     BOTS_DATA = [
         (2, "UciDataBot"),
-        (3, "GD_supBot")
+        (3, "GD_supBot"),
+        (4, "IGDIbot")
     ]
     user_id = models.BigIntegerField(primary_key=True)
     role = models.IntegerField(choices=ROLE_CHOISES, default=0, verbose_name='Роль')
@@ -33,6 +34,8 @@ class PersonModel(models.Model):
                 token = os.getenv('TOKEN_2')
             elif self.bot_number == 3:
                 token = os.getenv('TOKEN_3')
+            elif self.bot_number == 4:
+                token = os.getenv("TOKEN_4")
             response = requests.post(
                 url=f'https://api.telegram.org/bot{token}/{method}',
                 json={'chat_id': self.user_id, 'text': 'Ваша заявка была одобрена'}
@@ -93,6 +96,16 @@ class InstuctionsDownloadModel(models.Model):
 
     class Meta:
         verbose_name_plural = "Запросы инструкций"
+
+
+class EfemerideDownloadModel(models.Model):
+    user_id = models.ForeignKey("PersonModel", on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Имя пользователя")
+    file_name = models.CharField(max_length=100, verbose_name='Имя файла')
+    note_date = models.DateField(auto_now=True, verbose_name='Дата запроса')
+    note_time = models.TimeField(auto_now=True, verbose_name='Время запроса')
+
+    class Meta:
+        verbose_name_plural = "Выгрузки Эфемерид/Отчётов"
 
 
 class FeedBackModel(models.Model):

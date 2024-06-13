@@ -9,4 +9,5 @@ urlpatterns = [
     path('file/', views.FileView.as_view(), name='file'),
     path('instruction/', views.InstructionView.as_view(), name="instruction"),
     path('feedback/', views.FeedBackView.as_view(), name="feedback"),
+    path('efemeride/', views.EfemerideView.as_view(), name="efemeride"),
 ]

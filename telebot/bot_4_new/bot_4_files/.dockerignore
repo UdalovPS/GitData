@@ -1,0 +1,15 @@
+baggage.py
+baggage.json
+oop.py
+
+.git
+.cache
+.pytest_cache
+.idea
+
+venv
+l_venv
+
+tmp_archives
+tmp_efemerides
+bot_4_files/projects

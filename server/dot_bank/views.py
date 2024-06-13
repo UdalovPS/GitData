@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from datetime import datetime
 
 from .models import PersonModel, NoteModel, FileDownloadModel, InstuctionsDownloadModel
-from .models import PersonInstructionModel, FeedBackModel
+from .models import PersonInstructionModel, FeedBackModel, EfemerideDownloadModel
 
 
 class CheckView(View):
@@ -88,6 +88,17 @@ class InstructionView(APIView):
     def post(self, request: Request) -> Response:
         person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
         cursor = InstuctionsDownloadModel(
+                user_id=person,
+                file_name=request.POST['file_name'],
+            )
+        cursor.save()
+        return Response({'text': 'Data was save'})
+
+
+class EfemerideView(APIView):
+    def post(self, request: Request) -> Response:
+        person = PersonModel.objects.get(user_id=int(request.POST['user_id']))
+        cursor = EfemerideDownloadModel(
                 user_id=person,
                 file_name=request.POST['file_name'],
             )
