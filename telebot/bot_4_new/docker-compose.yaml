@@ -11,4 +11,4 @@ services:
     restart: always
     network_mode: host
     volumes:
-      - /home/udalovps/Python/FreeLans/dot_bank/DotBank/telebot/bot_4_new/bot_4_files:/src/bot_4_files
+      - /home/dot_bank/DotBank/telebot/bot_4_new/bot_4_files:/src/bot_4_files
