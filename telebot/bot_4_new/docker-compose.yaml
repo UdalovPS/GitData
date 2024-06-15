@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  bot_3:
+    build:
+      context: .
+    container_name: bot_4
+    command: python main.py
+    env_file:
+      - ../.env
+    mem_limit: 512m
+    restart: always
+    network_mode: host
+    volumes:
+      - /home/udalovps/Python/FreeLans/dot_bank/DotBank/telebot/bot_4_new/bot_4_files:/src/bot_4_files
