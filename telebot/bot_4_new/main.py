@@ -241,6 +241,7 @@ async def get_total_files(message: types.Message, state: FSMContext):
                     datetime_list = efem_obj.get_date_from_str(str_date=date_set)
                     await message.answer(f"Идёт загрузка нужных файлов")
                     archives_path = efem_obj.download_archive(str_data_list=datetime_list)
+                    await state.clear()
                     await message.answer("Файлы успешно загружены. Приступаю к формированию отчетов")
                     for archive in archives_path:
                         efem_obj.unzip_archive(archive_path=archive, save_path=f"{obj.projects_path}/{data['project_name']}")
@@ -252,6 +253,7 @@ async def get_total_files(message: types.Message, state: FSMContext):
                     logger.info(f"Answer files logic: {files_logic}")
                     if not files_logic["success"]:
                         await message.answer(files_logic["info"])
+                        await state.clear()
                     else:
                         file_paths = obj.get_generate_files_path(project_name=data["project_name"])
                         for file_path in file_paths:

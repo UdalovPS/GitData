@@ -264,12 +264,31 @@ class FileWriter:
             coord_z: str
     ) -> None:
         """This method past coord in one string"""
-        x_whole = self.add_symbol_before(data=coord_x.strip().split(".")[0], symbol=" ", count=6)
-        x_fract = self.add_symbol_after(data=coord_x.strip().split(".")[-1], symbol="0", count=7)
-        y_whole = self.add_symbol_before(data=coord_y.strip().split(".")[0], symbol=" ", count=6)
-        y_fract = self.add_symbol_after(data=coord_y.strip().split(".")[-1], symbol="0", count=7)
-        z_whole = self.add_symbol_before(data=coord_z.strip().split(".")[0], symbol=" ", count=6)
-        z_fract = self.add_symbol_after(data=coord_z.strip().split(".")[-1], symbol="0", count=7)
+        x_before = coord_x.strip().split(".")[0]
+        if len(x_before) > 6:
+            x_before = x_before[:6]
+        x_after = coord_x.strip().split(".")[-1]
+        if len(x_after) > 7:
+            x_after = x_after[:7]
+        y_before = coord_y.strip().split(".")[0]
+        if len(y_before) > 6:
+            y_before = y_before[:6]
+        y_after = coord_y.strip().split(".")[-1]
+        if len(y_after) > 7:
+            y_after = y_after[:7]
+        z_before = coord_z.strip().split(".")[0]
+        if len(z_before) > 6:
+            z_before = z_before[:6]
+        z_after = coord_z.strip().split(".")[-1]
+        if len(z_after) > 7:
+            z_after = z_after[:7]
+
+        x_whole = self.add_symbol_before(data=x_before, symbol=" ", count=6)
+        x_fract = self.add_symbol_after(data=x_after, symbol="0", count=7)
+        y_whole = self.add_symbol_before(data=y_before, symbol=" ", count=6)
+        y_fract = self.add_symbol_after(data=y_after, symbol="0", count=7)
+        z_whole = self.add_symbol_before(data=z_before, symbol=" ", count=6)
+        z_fract = self.add_symbol_after(data=z_after, symbol="0", count=7)
         self.file_data_list[18] = f"**{x_whole}.{x_fract} {y_whole}.{y_fract} {z_whole}.{z_fract}" \
                                   f"  station coordinates (km)"
 
