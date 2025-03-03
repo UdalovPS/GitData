@@ -42,6 +42,8 @@ class EfemerideDownloadrer:
         for one_date in str_data_list:
             year = one_date.year
             day_of_year = one_date.timetuple().tm_yday
+            if day_of_year < 100:
+                day_of_year = f"0{day_of_year}"
             logger.info(day_of_year)
             short_year = str(year)[2:]
             url_list.append(f"https://cddis.nasa.gov/archive/gnss/data/daily/{year}/brdc/brdc{day_of_year}0.{short_year}n.gz")
