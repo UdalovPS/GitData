@@ -48,7 +48,8 @@ class Parser:
         item_ts = soup.find_all("span", class_="item-ts")
         # for item in item_ts:
         #     print(f"item: {item}, text: <{item.text}>")
-        dates_and_times = [datetime.strptime(item.text, " %Y.%m.%d %H:%M") for item in item_ts]
+        # dates_and_times = [datetime.strptime(item.text, " %Y.%m.%d %H:%M") for item in item_ts]
+        dates_and_times = [datetime.strptime(item.text, " %d.%m.%Y %H:%M") for item in item_ts]
         # print(f"dates and times: {dates_and_times}")
         return dates_and_times
 
