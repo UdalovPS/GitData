@@ -21,6 +21,9 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 logging.basicConfig(level=logging.INFO)
 
 
+logger = logging.getLogger(__name__)
+
+
 class UrlCreator(StatesGroup):
     """This class need for save user steps during choice file"""
     range_time = State()
@@ -170,7 +173,7 @@ async def choice_station(message: types.Message, state: FSMContext):
                     await bot.send_document(message.chat.id, document=(file_url[0], responce.content))
             await state.finish()
     except Exception as _ex:
-        print(f"error to find time interval: {_ex}")
+        logger.info(f"error to find time interval: {_ex}")
     # except IndexError:
         await message.answer("Не корректно введет временной интервал.")
         await state.finish()
